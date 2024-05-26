@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import { ChakraProvider } from "@chakra-ui/react";
+import { AppMain } from "./AppMain";
+import { ThemeContextProvider } from "./context/ThemeContext";
+import { FontSizeContextProvider } from "./context/FontSizeContext";
+import "./App.css";
+import { FontFamilyContextProvider } from "./context/FontFamilyContext";
 
-function App() {
+export const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+      <ThemeContextProvider>
+        <FontSizeContextProvider>
+          <FontFamilyContextProvider>
+            <AppMain />
+          </FontFamilyContextProvider>
+        </FontSizeContextProvider>
+      </ThemeContextProvider>
+    </ChakraProvider>
   );
-}
-
-export default App;
+};
