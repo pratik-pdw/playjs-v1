@@ -25,7 +25,7 @@ import { useLogger } from "./useLogger";
 import { THEME_TYPE, useTheme } from "./context/ThemeContext";
 import { FONT_SIZE, useFontSize } from "./context/FontSizeContext";
 
-const DEFAULT_CODE_VALUE = `/* Write your code from here...*/\nconsole.log('Hello, World 🥳')`;
+const DEFAULT_CODE_VALUE = `/* Write your code from here...*/\nconsole.log('Hello, World ;)')`;
 
 export const AppMain = () => {
   const [value, setValue] = useState(DEFAULT_CODE_VALUE);
@@ -43,7 +43,7 @@ export const AppMain = () => {
       // eslint-disable-next-line no-new-func
       new Function(value)();
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
   }
 
@@ -70,7 +70,7 @@ export const AppMain = () => {
       <Box bg="#041C32" w="100%" p={3} color="white">
         <Flex justifyContent={"space-between"} alignItems={"center"}>
           <Flex alignItems={"center"} gap={2}>
-            <FaSquareJs />
+            <FaSquareJs size={30} />
             <Text as="b" fontSize="md">
               PlayJS
             </Text>
