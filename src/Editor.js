@@ -1,12 +1,14 @@
-import React, { useRef } from "react";
+import React from "react";
 import Editor from "@monaco-editor/react";
 import { THEME_TYPE, useTheme } from "./context/ThemeContext";
-import { useFontSize } from "./context/FontSizeContext";
+import { useSettingsContext } from "./context/SettingsContext";
 import { useFontFamily } from "./context/FontFamilyContext";
 
 export const CodeEditor = ({ value, handleEditorChange }) => {
   const { theme } = useTheme();
-  const { fontSize } = useFontSize();
+  const {
+    settings: { fontSize, lineNumbers },
+  } = useSettingsContext();
   const { fontFamily } = useFontFamily();
 
   return (
@@ -15,10 +17,12 @@ export const CodeEditor = ({ value, handleEditorChange }) => {
       options={{
         fontFamily: `${fontFamily}, Menlo, Monaco, monospace`,
         fontSize,
+        lineNumbers: lineNumbers ? "on" : "off",
+        fontLigatures: true,
       }}
       value={value}
       onChange={handleEditorChange}
-      height="90vh"
+      height="100vh"
       defaultLanguage="javascript"
     />
   );

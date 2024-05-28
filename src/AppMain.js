@@ -2,14 +2,22 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Checkbox,
   Container,
   Flex,
   IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
 import { CodeEditor } from "./Editor";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaBolt,
   FaCode,
@@ -23,7 +31,9 @@ import { FaMoon } from "react-icons/fa6";
 import { Logger } from "./Logger";
 import { useLogger } from "./useLogger";
 import { THEME_TYPE, useTheme } from "./context/ThemeContext";
-import { FONT_SIZE, useFontSize } from "./context/FontSizeContext";
+import { FONT_SIZE, useSettingsContext } from "./context/SettingsContext";
+import { IoSettingsSharp } from "react-icons/io5";
+import { PiListNumbersBold } from "react-icons/pi";
 
 const DEFAULT_CODE_VALUE = `/* Write your code from here...*/\nconsole.log('Hello, World ;)')`;
 
@@ -31,7 +41,12 @@ export const AppMain = () => {
   const [value, setValue] = useState(DEFAULT_CODE_VALUE);
   const { logs, setLogs } = useLogger();
   const { theme, setTheme } = useTheme();
-  const { fontSize, setFontSize } = useFontSize();
+  const {
+    settings: { fontSize, lineNumbers },
+    setSettings,
+  } = useSettingsContext();
+
+  const popoverContentRef = useRef();
 
   function handleEditorChange(value) {
     setValue(value);
@@ -60,7 +75,10 @@ export const AppMain = () => {
   };
 
   const handleFontSizeClick = (fs) => {
-    setFontSize(FONT_SIZE[fs]);
+    setSettings((prevSettings) => ({
+      ...prevSettings,
+      fontSize: FONT_SIZE[fs],
+    }));
   };
 
   const isDark = theme === THEME_TYPE.DARK;
@@ -79,22 +97,70 @@ export const AppMain = () => {
             <Button leftIcon={<FaBolt />} size="sm" onClick={handleRun}>
               Run
             </Button>
-            <ButtonGroup aria-label="Font Size" isAttached spacing="6">
-              <Button leftIcon={<FaFont />} size="sm" disabled>
-                Font Size
-              </Button>
-              {Object.keys(FONT_SIZE).map((fs) => (
-                <Button
-                  onClick={() => handleFontSizeClick(fs)}
-                  key={fs}
+            <Popover
+              initialFocusRef={popoverContentRef}
+              closeOnBlur
+              autoFocus
+              trigger="click"
+            >
+              <PopoverTrigger>
+                <IconButton
                   size="sm"
+                  aria-label="Settings"
+                  icon={<IoSettingsSharp />}
                 >
-                  <Text as={FONT_SIZE[fs] === fontSize ? "u" : ""}>
-                    {FONT_SIZE[fs]}
-                  </Text>
-                </Button>
-              ))}
-            </ButtonGroup>
+                  Trigger
+                </IconButton>
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverHeader color={"black"}>Settings</PopoverHeader>
+                <PopoverBody ref={popoverContentRef}>
+                  <ButtonGroup aria-label="Font Size" isAttached spacing="6">
+                    <Button leftIcon={<FaFont />} size="sm" disabled>
+                      Font Size
+                    </Button>
+                    {Object.keys(FONT_SIZE).map((fs) => (
+                      <Button
+                        onClick={() => handleFontSizeClick(fs)}
+                        key={fs}
+                        size="sm"
+                      >
+                        <Text as={FONT_SIZE[fs] === fontSize ? "u" : ""}>
+                          {FONT_SIZE[fs]}
+                        </Text>
+                      </Button>
+                    ))}
+                  </ButtonGroup>
+
+                  <Box marginTop={2} color={"black"}>
+                    <ButtonGroup isAttached>
+                      <Button
+                        leftIcon={<PiListNumbersBold />}
+                        size="sm"
+                        disabled
+                      >
+                        Line Numbers
+                      </Button>
+                      <Button size={"sm"} variant={"outline"}>
+                        <Checkbox
+                          value={lineNumbers}
+                          onChange={(e) =>
+                            setSettings((prevSettings) => ({
+                              ...prevSettings,
+                              lineNumbers: e.target.checked,
+                            }))
+                          }
+                          defaultChecked
+                        ></Checkbox>
+                      </Button>
+                    </ButtonGroup>
+                  </Box>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+
             <IconButton
               size="sm"
               onClick={handleThemeChange}

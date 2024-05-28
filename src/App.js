@@ -1,8 +1,8 @@
 import * as React from "react";
-import { ChakraProvider, color, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { AppMain } from "./AppMain";
 import { ThemeContextProvider } from "./context/ThemeContext";
-import { FontSizeContextProvider } from "./context/FontSizeContext";
+import { SettingsContextProvider } from "./context/SettingsContext";
 import "./App.css";
 import { FontFamilyContextProvider } from "./context/FontFamilyContext";
 // Supports weights 200-800
@@ -18,11 +18,11 @@ export const App = () => {
   return (
     <ChakraProvider theme={theme}>
       <ThemeContextProvider>
-        <FontSizeContextProvider>
+        <SettingsContextProvider>
           <FontFamilyContextProvider>
             <AppMain />
           </FontFamilyContextProvider>
-        </FontSizeContextProvider>
+        </SettingsContextProvider>
       </ThemeContextProvider>
     </ChakraProvider>
   );
