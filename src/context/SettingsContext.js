@@ -9,12 +9,16 @@ export const FONT_SIZE = {
 export const SettingsContext = React.createContext({
   fontSize: FONT_SIZE.MEDIUM,
   lineNumbers: true,
+  miniMap: true,
+  wordWrap: false,
 });
 
 export const SettingsContextProvider = ({ children }) => {
   const [settings, setSettings] = useState({
     fontSize: FONT_SIZE.MEDIUM,
     lineNumbers: true,
+    miniMap: true,
+    wordWrap: false,
   });
 
   return (

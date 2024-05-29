@@ -4,6 +4,7 @@ import {
   ButtonGroup,
   Checkbox,
   Container,
+  Divider,
   Flex,
   IconButton,
   Popover,
@@ -20,6 +21,7 @@ import { CodeEditor } from "./Editor";
 import { useEffect, useRef, useState } from "react";
 import {
   FaBolt,
+  FaCheck,
   FaCode,
   FaFont,
   FaSquareJs,
@@ -34,6 +36,9 @@ import { THEME_TYPE, useTheme } from "./context/ThemeContext";
 import { FONT_SIZE, useSettingsContext } from "./context/SettingsContext";
 import { IoSettingsSharp } from "react-icons/io5";
 import { PiListNumbersBold } from "react-icons/pi";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { VscWordWrap } from "react-icons/vsc";
+import { GoProjectRoadmap } from "react-icons/go";
 
 const DEFAULT_CODE_VALUE = `/* Write your code from here...*/\nconsole.log('Hello, World ;)')`;
 
@@ -42,7 +47,7 @@ export const AppMain = () => {
   const { logs, setLogs } = useLogger();
   const { theme, setTheme } = useTheme();
   const {
-    settings: { fontSize, lineNumbers },
+    settings: { fontSize, lineNumbers, wordWrap, minimap },
     setSettings,
   } = useSettingsContext();
 
@@ -98,6 +103,8 @@ export const AppMain = () => {
               Run
             </Button>
             <Popover
+              id="popover-container"
+              style={{ zIndex: 100000 }}
               initialFocusRef={popoverContentRef}
               closeOnBlur
               autoFocus
@@ -117,8 +124,23 @@ export const AppMain = () => {
                 <PopoverCloseButton />
                 <PopoverHeader color={"black"}>Settings</PopoverHeader>
                 <PopoverBody ref={popoverContentRef}>
-                  <ButtonGroup aria-label="Font Size" isAttached spacing="6">
-                    <Button leftIcon={<FaFont />} size="sm" disabled>
+                  <Text marginLeft={2} fontSize={"sm"} as="b" color={"black"}>
+                    Editor & Console
+                  </Text>
+                  <ButtonGroup
+                    marginTop={2}
+                    display={"flex"}
+                    aria-label="Font Size"
+                    isAttached
+                    spacing="6"
+                  >
+                    <Button
+                      justifyContent={"start"}
+                      flexGrow={"1"}
+                      leftIcon={<FaFont />}
+                      size="sm"
+                      disabled
+                    >
                       Font Size
                     </Button>
                     {Object.keys(FONT_SIZE).map((fs) => (
@@ -133,23 +155,80 @@ export const AppMain = () => {
                       </Button>
                     ))}
                   </ButtonGroup>
-
+                  <Divider marginTop={3} marginBottom={1} />
+                  <Text paddingLeft={2} fontSize={"sm"} as="b" color={"black"}>
+                    Editor
+                  </Text>
                   <Box marginTop={2} color={"black"}>
-                    <ButtonGroup isAttached>
+                    <ButtonGroup display={"flex"} isAttached>
                       <Button
+                        justifyContent={"start"}
+                        flexGrow={"1"}
                         leftIcon={<PiListNumbersBold />}
                         size="sm"
                         disabled
                       >
                         Line Numbers
                       </Button>
-                      <Button size={"sm"} variant={"outline"}>
+                      <Button size="sm">
                         <Checkbox
                           value={lineNumbers}
                           onChange={(e) =>
                             setSettings((prevSettings) => ({
                               ...prevSettings,
                               lineNumbers: e.target.checked,
+                            }))
+                          }
+                          defaultChecked
+                        ></Checkbox>
+                      </Button>
+                    </ButtonGroup>
+                  </Box>
+
+                  <Box marginTop={2} color={"black"}>
+                    <ButtonGroup display={"flex"} isAttached>
+                      <Button
+                        justifyContent={"start"}
+                        flexGrow={"1"}
+                        leftIcon={<VscWordWrap />}
+                        size="sm"
+                        disabled
+                      >
+                        Word Wrap
+                      </Button>
+                      <Button size="sm">
+                        <Checkbox
+                          value={wordWrap}
+                          onChange={(e) =>
+                            setSettings((prevSettings) => ({
+                              ...prevSettings,
+                              wordWrap: e.target.checked,
+                            }))
+                          }
+                          defaultChecked
+                        ></Checkbox>
+                      </Button>
+                    </ButtonGroup>
+                  </Box>
+
+                  <Box marginTop={2} color={"black"}>
+                    <ButtonGroup display={"flex"} isAttached>
+                      <Button
+                        justifyContent={"start"}
+                        flexGrow={"1"}
+                        leftIcon={<GoProjectRoadmap />}
+                        size="sm"
+                        disabled
+                      >
+                        Minimap
+                      </Button>
+                      <Button size="sm">
+                        <Checkbox
+                          value={minimap}
+                          onChange={(e) =>
+                            setSettings((prevSettings) => ({
+                              ...prevSettings,
+                              minimap: e.target.checked,
                             }))
                           }
                           defaultChecked
@@ -171,47 +250,54 @@ export const AppMain = () => {
           </Flex>
         </Flex>
       </Box>
-      <SimpleGrid marginTop={0} columns={2} spacing={0}>
-        <Container minWidth={"100%"} margin={0} padding={0}>
-          <Box
-            bg="#064663"
-            w="100%"
-            p={2}
-            color="white"
-            display={"flex"}
-            alignItems={"center"}
-            gap={2}
-          >
-            <FaCode />
-            <Text fontSize="sm">Editor</Text>
-          </Box>
-          <CodeEditor value={value} handleEditorChange={handleEditorChange} />
-        </Container>
-        <Container minWidth={"100%"} margin={0} padding={0}>
-          <Box
-            bg="#064663"
-            w="100%"
-            p={2}
-            color="white"
-            display={"flex"}
-            alignItems={"center"}
-            gap={2}
-          >
-            <FaTerminal />
-            <Text fontSize="sm">Console</Text>
-          </Box>
-          <div
-            style={{
-              height: "100vh",
-              overflowY: "auto",
-              color: isDark ? "#fff" : "#242424",
-              backgroundColor: isDark ? "#242424" : "#fff",
-            }}
-          >
-            <Logger logs={logs} theme={theme} fontSize={fontSize} />
-          </div>
-        </Container>
-      </SimpleGrid>
+      <PanelGroup direction="horizontal">
+        <Panel defaultSize={30} minSize={30}>
+          <Container minWidth={"100%"} margin={0} padding={0}>
+            <Box
+              bg="#064663"
+              w="100%"
+              p={2}
+              color="white"
+              display={"flex"}
+              alignItems={"center"}
+              gap={2}
+            >
+              <FaCode />
+              <Text fontSize="sm">Editor</Text>
+            </Box>
+            <CodeEditor value={value} handleEditorChange={handleEditorChange} />
+          </Container>
+        </Panel>
+        <PanelResizeHandle
+          style={{ width: "5px", backgroundColor: "#064663" }}
+        />
+        <Panel defaultSize={30} minSize={30}>
+          <Container minWidth={"100%"} margin={0} padding={0}>
+            <Box
+              bg="#064663"
+              w="100%"
+              p={2}
+              color="white"
+              display={"flex"}
+              alignItems={"center"}
+              gap={2}
+            >
+              <FaTerminal />
+              <Text fontSize="sm">Console</Text>
+            </Box>
+            <div
+              style={{
+                height: "100vh",
+                overflowY: "auto",
+                color: isDark ? "#fff" : "#242424",
+                backgroundColor: isDark ? "#242424" : "#fff",
+              }}
+            >
+              <Logger logs={logs} theme={theme} fontSize={fontSize} />
+            </div>
+          </Container>
+        </Panel>
+      </PanelGroup>
     </>
   );
 };

@@ -12,6 +12,9 @@ const theme = extendTheme({
   fonts: {
     body: `'Plus Jakarta Sans Variable', sans-serif`,
   },
+  zIndices: {
+    docked: 10000,
+  },
 });
 
 export const App = () => {

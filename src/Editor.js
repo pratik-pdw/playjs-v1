@@ -7,7 +7,7 @@ import { useFontFamily } from "./context/FontFamilyContext";
 export const CodeEditor = ({ value, handleEditorChange }) => {
   const { theme } = useTheme();
   const {
-    settings: { fontSize, lineNumbers },
+    settings: { fontSize, lineNumbers, minimap, wordWrap },
   } = useSettingsContext();
   const { fontFamily } = useFontFamily();
 
@@ -19,6 +19,10 @@ export const CodeEditor = ({ value, handleEditorChange }) => {
         fontSize,
         lineNumbers: lineNumbers ? "on" : "off",
         fontLigatures: true,
+        wordWrap: wordWrap ? "on" : "off",
+        minimap: {
+          enabled: minimap,
+        },
       }}
       value={value}
       onChange={handleEditorChange}
