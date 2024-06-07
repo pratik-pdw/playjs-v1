@@ -104,7 +104,6 @@ export const AppMain = () => {
             </Button>
             <Popover
               id="popover-container"
-              style={{ zIndex: 100000 }}
               initialFocusRef={popoverContentRef}
               closeOnBlur
               autoFocus
@@ -121,9 +120,9 @@ export const AppMain = () => {
               </PopoverTrigger>
               <PopoverContent>
                 <PopoverArrow />
-                <PopoverCloseButton />
+                <PopoverCloseButton ref={popoverContentRef} />
                 <PopoverHeader color={"black"}>Settings</PopoverHeader>
-                <PopoverBody ref={popoverContentRef}>
+                <PopoverBody>
                   <Text marginLeft={2} fontSize={"sm"} as="b" color={"black"}>
                     Editor & Console
                   </Text>
@@ -269,8 +268,26 @@ export const AppMain = () => {
           </Container>
         </Panel>
         <PanelResizeHandle
-          style={{ width: "5px", backgroundColor: "#064663" }}
-        />
+          style={{
+            width: "10px",
+            backgroundColor: "#064663",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{ width: "1px", height: "20px", backgroundColor: "white" }}
+          ></div>
+          <div
+            style={{
+              width: "1px",
+              height: "20px",
+              backgroundColor: "white",
+              marginLeft: 3,
+            }}
+          ></div>
+        </PanelResizeHandle>
         <Panel defaultSize={30} minSize={30}>
           <Container minWidth={"100%"} margin={0} padding={0}>
             <Box
