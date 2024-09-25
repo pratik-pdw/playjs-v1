@@ -7,12 +7,13 @@ export const FONT_FAMILY = {
   IBM_PLEX_MONO: "IBM Plex Mono",
   OPERATOR_MONO: "Operator Mono",
   CASCADIA_MONO: "Cascadia Mono",
+  ROBOTO_MONO: "Roboto Mono",
 };
 
-export const FontFamilyContext = React.createContext(FONT_FAMILY.MONACO);
+export const FontFamilyContext = React.createContext(FONT_FAMILY.ROBOTO_MONO);
 
 export const FontFamilyContextProvider = ({ children }) => {
-  const [fontFamily, setFontFamily] = useState(FONT_FAMILY.MONACO);
+  const [fontFamily, setFontFamily] = useState(FONT_FAMILY.ROBOTO_MONO);
 
   return (
     <FontFamilyContext.Provider value={{ fontFamily, setFontFamily }}>
