@@ -1,17 +1,17 @@
-import { Hook, Unhook } from "console-feed";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export const useLogger = () => {
   const [logs, setLogs] = useState([]);
 
-  // run once!
   useEffect(() => {
-    const hookedConsole = Hook(
-      window.console,
-      (log) => setLogs((currLogs) => [...currLogs, log]),
-      false
-    );
-    return () => Unhook(hookedConsole);
+    const handleMessage = (event) => {
+      if (event.data && event.data.source === 'iframe-console') {
+        setLogs((prevLogs) => [...prevLogs, event.data.payload]);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
   }, []);
 
   return { logs, setLogs };
