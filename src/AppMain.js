@@ -30,17 +30,27 @@ export const AppMain = () => {
   const handleRun = useCallback(
     (editorCode) => {
       setLogs([]);
-      console.log(editorCode);
       try {
         const { code } = Babel.transform(editorCode, {
-          presets: ['es2015', 'env', 'react'],
+          presets: [
+            [
+              'env',
+              {
+                targets: {
+                  esmodules: true, // ⚠️ Important: avoids CommonJS
+                },
+                modules: false, // 👈 prevents transforming ESModules to CommonJS
+              },
+            ],
+            'react',
+          ],
         });
         const html = `
         <!DOCTYPE html>
         <html lang="en"> 
         <head></head>
         <body>
-         <script>
+         <script type="module">
         ['log', 'error', 'warn', 'info'].forEach((type) => {
         const original = console[type];
         console[type] = function (...args) {
@@ -52,8 +62,8 @@ export const AppMain = () => {
           };
         });
         </script>
-        <script>
-        ${code}
+        <script type="module">
+          ${code}
         </script>
         </body>
        
@@ -115,7 +125,7 @@ export const AppMain = () => {
         </Flex>
       </Box>
       <PanelGroup direction="horizontal">
-        <Panel defaultSize={50} minSize={50}>
+        <Panel defaultSize={50} minSize={30}>
           <Container minWidth={'100%'} margin={0} padding={0}>
             <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
               <FaCode />
@@ -143,7 +153,7 @@ export const AppMain = () => {
             }}
           ></div>
         </PanelResizeHandle>
-        <Panel defaultSize={50} minSize={50}>
+        <Panel defaultSize={50} minSize={30}>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60} minSize={5}>
               <Container height={'100%'} minWidth={'100%'} margin={0} padding={0}>
@@ -151,7 +161,15 @@ export const AppMain = () => {
                   <FaLaptop />
                   <Text fontSize="sm">Preview</Text>
                 </Box>
-                <iframe style={{ width: '100%', height: '100%' }} title="iframe-playjs-runner" sandbox="allow-scripts" src={iframeSrc} />
+                <iframe
+                  style={{ width: '100%', height: '100%' }}
+                  title="iframe-playjs-runner"
+                  sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
+                  allow="accelerometer; camera; encrypted-media; geolocation; gyroscope; microphone; midi; payment;"
+                  allowtransparency="true"
+                  allowFullScreen={true}
+                  src={iframeSrc}
+                />
               </Container>
             </Panel>
             <PanelResizeHandle
