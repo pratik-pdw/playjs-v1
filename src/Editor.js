@@ -5,7 +5,7 @@ import { useSettingsContext } from './context/SettingsContext';
 import { useFontFamily } from './context/FontFamilyContext';
 import * as monaco from 'monaco-editor';
 
-export const CodeEditor = ({ value, handleEditorChange, onCmdEnter }) => {
+export const CodeEditor = ({ value, language, handleEditorChange, onCmdEnter }) => {
   const { theme } = useTheme();
   const {
     settings: { fontSize, lineNumbers, minimap, wordWrap },
@@ -38,7 +38,7 @@ export const CodeEditor = ({ value, handleEditorChange, onCmdEnter }) => {
       value={value}
       onChange={handleEditorChange}
       height="100vh"
-      defaultLanguage="javascript"
+      defaultLanguage={language}
     />
   );
 };

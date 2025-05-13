@@ -11,11 +11,26 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import * as Babel from '@babel/standalone';
 import { Settings } from './Settings';
 import { MdKeyboardCommandKey } from 'react-icons/md';
+import { IoLogoCss3 } from 'react-icons/io';
+import { IoLogoJavascript } from 'react-icons/io';
+import { IoLogoHtml5 } from 'react-icons/io';
+import { IoGolf } from 'react-icons/io5';
 
-const DEFAULT_CODE_VALUE = `/* Write your code from here...*/\nconsole.log('Hello, World ;)')`;
+const DEFAULT_HTML_CODE = `<h1>Hello, World</h1>`;
+const DEFAULT_CSS_CODE = `body {
+    font-family: sans-serif;
+}
+h1 {
+    color: dodgerblue;
+}
+`;
+const DEFAULT_JS_CODE = `/* Write your code from here...*/\nconsole.log('Hello, World ;)')`;
 
 export const AppMain = () => {
-  const [value, setValue] = useState(DEFAULT_CODE_VALUE);
+  const [htmlCode, setHtmlCode] = useState(DEFAULT_HTML_CODE);
+  const [cssCode, setCssCode] = useState(DEFAULT_CSS_CODE);
+  const [jsCode, setJsCode] = useState(DEFAULT_JS_CODE);
+
   const { logs, setLogs } = useLogger();
   const { theme, setTheme } = useTheme();
   const {
@@ -23,33 +38,45 @@ export const AppMain = () => {
   } = useSettingsContext();
   const [iframeSrc, setIFrameSrc] = useState('');
 
-  function handleEditorChange(value) {
-    setValue(value);
-  }
+  const handleHtmlCodeChange = (code) => {
+    setHtmlCode(code);
+  };
 
-  const handleRun = useCallback(
-    (editorCode) => {
-      setLogs([]);
-      try {
-        const { code } = Babel.transform(editorCode, {
-          presets: [
-            [
-              'env',
-              {
-                targets: {
-                  esmodules: true, // ⚠️ Important: avoids CommonJS
-                },
-                modules: false, // 👈 prevents transforming ESModules to CommonJS
+  const handleCssCodeChange = (code) => {
+    setCssCode(code);
+  };
+
+  const handleJavascriptCodeChange = (code) => {
+    setJsCode(code);
+  };
+
+  const handleRun = useCallback(() => {
+    setLogs([]);
+    try {
+      const { code } = Babel.transform(jsCode, {
+        presets: [
+          [
+            'env',
+            {
+              targets: {
+                esmodules: true, // ⚠️ Important: avoids CommonJS
               },
-            ],
-            'react',
+              modules: false, // 👈 prevents transforming ESModules to CommonJS
+            },
           ],
-        });
-        const html = `
+          'react',
+        ],
+      });
+      const html = `
         <!DOCTYPE html>
         <html lang="en"> 
-        <head></head>
+        <head>
+          <style>
+            ${cssCode}
+          </style>
+        </head>
         <body>
+        ${htmlCode}
          <script type="module">
         ['log', 'error', 'warn', 'info'].forEach((type) => {
         const original = console[type];
@@ -90,18 +117,12 @@ export const AppMain = () => {
         </body>
        
       `;
-        const blob = new Blob([html], { type: 'text/html' });
-        setIFrameSrc(URL.createObjectURL(blob));
-      } catch (error) {
-        console.error(error.message);
-      }
-    },
-    [setLogs],
-  );
-
-  useEffect(() => {
-    if (!value) setLogs([]);
-  }, [value, setLogs]);
+      const blob = new Blob([html], { type: 'text/html' });
+      setIFrameSrc(URL.createObjectURL(blob));
+    } catch (error) {
+      console.error(error.message);
+    }
+  }, [htmlCode, cssCode, jsCode, setLogs]);
 
   const handleThemeChange = () => {
     if (theme === THEME_TYPE.LIGHT) {
@@ -111,12 +132,13 @@ export const AppMain = () => {
     }
   };
 
-  const handleCmdEnter = useCallback(
-    (editorCode) => {
-      handleRun(editorCode);
-    },
-    [handleRun],
-  );
+  const handleCmdEnter = useCallback(() => {
+    handleRun();
+  }, [handleRun]);
+
+  useEffect(() => {
+    handleRun();
+  }, [htmlCode, cssCode, jsCode, handleRun]);
 
   const isDark = theme === THEME_TYPE.DARK;
 
@@ -125,13 +147,13 @@ export const AppMain = () => {
       <Box id="header" bg="#041C32" w="100%" p={3} color="white">
         <Flex justifyContent={'space-between'} alignItems={'center'}>
           <Flex alignItems={'center'} gap={2}>
-            <FaSquareJs size={30} />
+            <IoGolf size={25} />
             <Text as="b" fontSize="md">
               PlayJS
             </Text>
           </Flex>
           <Flex alignItems={'center'} gap={5}>
-            <Button leftIcon={<FaBolt />} size="sm" onClick={() => handleRun(value)}>
+            <Button leftIcon={<FaBolt />} size="sm" onClick={handleRun}>
               Run (<MdKeyboardCommandKey />
               /Ctrl + Return)
             </Button>
@@ -148,13 +170,37 @@ export const AppMain = () => {
       </Box>
       <PanelGroup direction="horizontal">
         <Panel defaultSize={50} minSize={30}>
-          <Container minWidth={'100%'} margin={0} padding={0}>
-            <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
-              <FaCode />
-              <Text fontSize="sm">Editor</Text>
-            </Box>
-            <CodeEditor onCmdEnter={handleCmdEnter} value={value} handleEditorChange={handleEditorChange} />
-          </Container>
+          <PanelGroup direction="vertical" style={{ height: '100vh' }}>
+            <Panel>
+              <Container minWidth={'100%'} margin={0} padding={0}>
+                <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
+                  <IoLogoHtml5 />
+                  <Text fontSize="sm">HTML</Text>
+                </Box>
+                <CodeEditor language={'html'} onCmdEnter={handleCmdEnter} value={htmlCode} handleEditorChange={handleHtmlCodeChange} />
+              </Container>
+            </Panel>
+            <PanelResizeHandle />
+            <Panel>
+              <Container minWidth={'100%'} margin={0} padding={0}>
+                <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
+                  <IoLogoCss3 />
+                  <Text fontSize="sm">CSS</Text>
+                </Box>
+                <CodeEditor language={'css'} onCmdEnter={handleCmdEnter} value={cssCode} handleEditorChange={handleCssCodeChange} />
+              </Container>
+            </Panel>
+            <PanelResizeHandle />
+            <Panel>
+              <Container minWidth={'100%'} margin={0} padding={0}>
+                <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
+                  <IoLogoJavascript />
+                  <Text fontSize="sm">Javascript</Text>
+                </Box>
+                <CodeEditor language={'javascript'} onCmdEnter={handleCmdEnter} value={jsCode} handleEditorChange={handleJavascriptCodeChange} />
+              </Container>
+            </Panel>
+          </PanelGroup>
         </Panel>
         <PanelResizeHandle
           style={{
