@@ -1,32 +1,20 @@
 import { Box, Button, Container, Flex, IconButton, Text } from '@chakra-ui/react';
 import { CodeEditor } from './Editor';
 import { useCallback, useEffect, useState } from 'react';
-import { FaBolt, FaCode, FaSquareJs, FaSun, FaTerminal, FaLaptop } from 'react-icons/fa6';
-import { FaMoon } from 'react-icons/fa6';
+import { FaBolt, FaSun, FaTerminal, FaLaptop, FaMoon } from 'react-icons/fa6';
 import { Logger } from './Logger';
 import { useLogger } from './useLogger';
 import { THEME_TYPE, useTheme } from './context/ThemeContext';
 import { useSettingsContext } from './context/SettingsContext';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import * as Babel from '@babel/standalone';
 import { Settings } from './Settings';
 import { MdKeyboardCommandKey } from 'react-icons/md';
-import { IoLogoCss3 } from 'react-icons/io';
-import { IoLogoJavascript } from 'react-icons/io';
-import { IoLogoHtml5 } from 'react-icons/io';
+import { IoLogoCss3, IoLogoJavascript, IoLogoHtml5 } from 'react-icons/io';
 import { IoGolf } from 'react-icons/io5';
+import { DEFAULT_CSS_CODE, DEFAULT_HTML_CODE, DEFAULT_JS_CODE } from './constants';
+import { getIframeSrcCode } from './utils/get-iframe-src-code';
 
-const DEFAULT_HTML_CODE = `<h1>Hello, World</h1>`;
-const DEFAULT_CSS_CODE = `body {
-    font-family: sans-serif;
-}
-h1 {
-    color: dodgerblue;
-}
-`;
-const DEFAULT_JS_CODE = `/* Write your code from here...*/\nconsole.log('Hello, World ;)')`;
-
-export const AppMain = () => {
+export const Home = () => {
   const [htmlCode, setHtmlCode] = useState(DEFAULT_HTML_CODE);
   const [cssCode, setCssCode] = useState(DEFAULT_CSS_CODE);
   const [jsCode, setJsCode] = useState(DEFAULT_JS_CODE);
@@ -52,77 +40,8 @@ export const AppMain = () => {
 
   const handleRun = useCallback(() => {
     setLogs([]);
-    try {
-      const { code } = Babel.transform(jsCode, {
-        presets: [
-          [
-            'env',
-            {
-              targets: {
-                esmodules: true, // ⚠️ Important: avoids CommonJS
-              },
-              modules: false, // 👈 prevents transforming ESModules to CommonJS
-            },
-          ],
-          'react',
-        ],
-      });
-      const html = `
-        <!DOCTYPE html>
-        <html lang="en"> 
-        <head>
-          <style>
-            ${cssCode}
-          </style>
-        </head>
-        <body>
-        ${htmlCode}
-         <script type="module">
-        ['log', 'error', 'warn', 'info'].forEach((type) => {
-        const original = console[type];
-        console[type] = function (...args) {
-          window.parent.postMessage({
-            source: 'iframe-console',
-            payload: { method: type, data: args },
-          }, '*');
-          original.apply(console, args);
-          };
-        });
-
-                // Catch uncaught runtime errors
-          window.addEventListener('error', (event) => {
-            window.parent.postMessage({
-              source: 'iframe-console',
-              payload: {
-                method: 'error',
-                data: [event.message],
-              },
-            }, '*');
-          });
-
-          // Catch unhandled Promise rejections
-          window.addEventListener('unhandledrejection', (event) => {
-            window.parent.postMessage({
-              source: 'iframe-console',
-              payload: {
-                method: 'error',
-                data: [event.reason],
-              },
-            }, '*');
-          });
-        </script>
-        <script type="module">
-          ${code}
-        </script>
-        </body>
-       
-      `;
-      const blob = new Blob([html], { type: 'text/html' });
-      setIFrameSrc(URL.createObjectURL(blob));
-    } catch (error) {
-      console.error(error.message);
-    }
-  }, [htmlCode, cssCode, jsCode, setLogs]);
+    setIFrameSrc(getIframeSrcCode(htmlCode, cssCode, jsCode));
+  }, [htmlCode, cssCode, jsCode, setLogs, setIFrameSrc]);
 
   const handleThemeChange = () => {
     if (theme === THEME_TYPE.LIGHT) {
@@ -171,7 +90,7 @@ export const AppMain = () => {
       <PanelGroup direction="horizontal">
         <Panel defaultSize={50} minSize={30}>
           <PanelGroup direction="vertical" style={{ height: '100vh' }}>
-            <Panel>
+            <Panel order={1}>
               <Container minWidth={'100%'} margin={0} padding={0}>
                 <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
                   <IoLogoHtml5 />
@@ -181,7 +100,7 @@ export const AppMain = () => {
               </Container>
             </Panel>
             <PanelResizeHandle />
-            <Panel>
+            <Panel order={2}>
               <Container minWidth={'100%'} margin={0} padding={0}>
                 <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
                   <IoLogoCss3 />
@@ -191,7 +110,7 @@ export const AppMain = () => {
               </Container>
             </Panel>
             <PanelResizeHandle />
-            <Panel>
+            <Panel order={3}>
               <Container minWidth={'100%'} margin={0} padding={0}>
                 <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
                   <IoLogoJavascript />

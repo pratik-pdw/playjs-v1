@@ -1,16 +1,16 @@
-import * as React from "react";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import { AppMain } from "./AppMain";
-import { ThemeContextProvider } from "./context/ThemeContext";
-import { SettingsContextProvider } from "./context/SettingsContext";
-import "./App.css";
-import { FontFamilyContextProvider } from "./context/FontFamilyContext";
+import * as React from 'react';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { Home } from './Home';
+import { ThemeContextProvider } from './context/ThemeContext';
+import { SettingsContextProvider } from './context/SettingsContext';
+import './App.css';
+import { FontFamilyContextProvider } from './context/FontFamilyContext';
 // Supports weights 200-800
-import "@fontsource-variable/plus-jakarta-sans";
+import '@fontsource-variable/plus-jakarta-sans';
 
 const theme = extendTheme({
   fonts: {
-    body: `'Plus Jakarta Sans Variable', sans-serif`,
+    body: `'Bricolage Grotesque', sans-serif`,
   },
   zIndices: {
     docked: 10000,
@@ -23,7 +23,7 @@ export const App = () => {
       <ThemeContextProvider>
         <SettingsContextProvider>
           <FontFamilyContextProvider>
-            <AppMain />
+            <Home />
           </FontFamilyContextProvider>
         </SettingsContextProvider>
       </ThemeContextProvider>
