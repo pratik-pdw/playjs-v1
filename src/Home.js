@@ -13,6 +13,7 @@ import { IoLogoCss3, IoLogoJavascript, IoLogoHtml5 } from 'react-icons/io';
 import { IoGolf } from 'react-icons/io5';
 import { DEFAULT_CSS_CODE, DEFAULT_HTML_CODE, DEFAULT_JS_CODE } from './constants';
 import { getIframeSrcCode } from './utils/get-iframe-src-code';
+import { Preview } from './Preview';
 
 export const Home = () => {
   const [htmlCode, setHtmlCode] = useState(DEFAULT_HTML_CODE);
@@ -148,15 +149,7 @@ export const Home = () => {
                   <FaLaptop />
                   <Text fontSize="sm">Preview</Text>
                 </Box>
-                <iframe
-                  style={{ width: '100%', height: '100%' }}
-                  title="iframe-playjs-runner"
-                  sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
-                  allow="accelerometer; camera; encrypted-media; geolocation; gyroscope; microphone; midi; payment;"
-                  allowtransparency="true"
-                  allowFullScreen={true}
-                  src={iframeSrc}
-                />
+                <Preview iFrameSrc={iframeSrc} />
               </Container>
             </Panel>
             <PanelResizeHandle

@@ -28,13 +28,13 @@ export const getIframeSrcCode = (htmlCode, cssCode, jsCode) => {
             <style>
               ${cssCode}
             </style>
+            ${bindConsoleFeedToIframe()}
+            <script type="module" defer>
+              ${transpiledJavascriptCode}
+            </script>
           </head>
           <body>
           ${htmlCode}
-          ${bindConsoleFeedToIframe()}
-          <script type="module">
-            ${transpiledJavascriptCode}
-          </script>
           </body>
         `;
     const blob = new Blob([html], { type: 'text/html' });
