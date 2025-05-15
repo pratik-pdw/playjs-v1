@@ -46,7 +46,11 @@ export const Settings = () => {
       <PopoverContent>
         <PopoverArrow />
         <PopoverCloseButton ref={popoverContentRef} />
-        <PopoverHeader color={'black'}>Settings</PopoverHeader>
+        <PopoverHeader color={'black'}>
+          <Text fontSize={'lg'} as={'b'}>
+            Settings
+          </Text>
+        </PopoverHeader>
         <PopoverBody>
           <Text marginLeft={2} fontSize={'sm'} as="b" color={'black'}>
             Editor & Console

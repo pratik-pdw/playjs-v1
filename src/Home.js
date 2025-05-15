@@ -1,6 +1,6 @@
-import { Box, Button, Container, Flex, IconButton, Text } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, IconButton, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react';
 import { CodeEditor } from './Editor';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FaBolt, FaSun, FaTerminal, FaLaptop, FaMoon } from 'react-icons/fa6';
 import { Logger } from './Logger';
 import { useLogger } from './useLogger';
@@ -14,8 +14,11 @@ import { IoGolf } from 'react-icons/io5';
 import { DEFAULT_CSS_CODE, DEFAULT_HTML_CODE, DEFAULT_JS_CODE } from './constants';
 import { getIframeSrcCode } from './utils/get-iframe-src-code';
 import { Preview } from './Preview';
+import { SiJavascript } from 'react-icons/si';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 
 export const Home = () => {
+  const previewWindow = useRef(null);
   const [htmlCode, setHtmlCode] = useState(DEFAULT_HTML_CODE);
   const [cssCode, setCssCode] = useState(DEFAULT_CSS_CODE);
   const [jsCode, setJsCode] = useState(DEFAULT_JS_CODE);
@@ -42,7 +45,7 @@ export const Home = () => {
   const handleRun = useCallback(() => {
     setLogs([]);
     setIFrameSrc(getIframeSrcCode(htmlCode, cssCode, jsCode));
-  }, [htmlCode, cssCode, jsCode, setLogs, setIFrameSrc]);
+  }, [htmlCode, cssCode, jsCode, setLogs]);
 
   const handleThemeChange = () => {
     if (theme === THEME_TYPE.LIGHT) {
@@ -72,10 +75,9 @@ export const Home = () => {
               PlayJS
             </Text>
           </Flex>
-          <Flex alignItems={'center'} gap={5}>
+          <Flex alignItems={'center'} gap={3}>
             <Button leftIcon={<FaBolt />} size="sm" onClick={handleRun}>
-              Run (<MdKeyboardCommandKey />
-              /Ctrl + Return)
+              Run
             </Button>
             <Settings />
             <IconButton
@@ -89,38 +91,41 @@ export const Home = () => {
         </Flex>
       </Box>
       <PanelGroup direction="horizontal">
-        <Panel defaultSize={50} minSize={30}>
-          <PanelGroup direction="vertical" style={{ height: '100vh' }}>
-            <Panel order={1}>
-              <Container minWidth={'100%'} margin={0} padding={0}>
-                <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
-                  <IoLogoHtml5 />
-                  <Text fontSize="sm">HTML</Text>
-                </Box>
+        <Panel defaultSize={50} minSize={20} maxSize={95}>
+          <Tabs height={'100vh'} position="relative" variant="unstyled">
+            <TabList backgroundColor={'#054663'} color={'white'}>
+              <Tab>
+                <IoLogoHtml5 />
+                <Text ml={2} fontSize="sm">
+                  HTML
+                </Text>
+              </Tab>
+              <Tab>
+                <IoLogoCss3 />
+                <Text ml={2} fontSize="sm">
+                  CSS
+                </Text>
+              </Tab>
+              <Tab>
+                <SiJavascript />
+                <Text ml={2} fontSize="sm">
+                  Javascript
+                </Text>
+              </Tab>
+            </TabList>
+            <TabIndicator mt="-1.5px" height="2px" bg="#70d3ff" borderRadius="1px" />
+            <TabPanels>
+              <TabPanel padding={0}>
                 <CodeEditor language={'html'} onCmdEnter={handleCmdEnter} value={htmlCode} handleEditorChange={handleHtmlCodeChange} />
-              </Container>
-            </Panel>
-            <PanelResizeHandle />
-            <Panel order={2}>
-              <Container minWidth={'100%'} margin={0} padding={0}>
-                <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
-                  <IoLogoCss3 />
-                  <Text fontSize="sm">CSS</Text>
-                </Box>
+              </TabPanel>
+              <TabPanel padding={0}>
                 <CodeEditor language={'css'} onCmdEnter={handleCmdEnter} value={cssCode} handleEditorChange={handleCssCodeChange} />
-              </Container>
-            </Panel>
-            <PanelResizeHandle />
-            <Panel order={3}>
-              <Container minWidth={'100%'} margin={0} padding={0}>
-                <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
-                  <IoLogoJavascript />
-                  <Text fontSize="sm">Javascript</Text>
-                </Box>
+              </TabPanel>
+              <TabPanel padding={0}>
                 <CodeEditor language={'javascript'} onCmdEnter={handleCmdEnter} value={jsCode} handleEditorChange={handleJavascriptCodeChange} />
-              </Container>
-            </Panel>
-          </PanelGroup>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </Panel>
         <PanelResizeHandle
           style={{
@@ -141,13 +146,22 @@ export const Home = () => {
             }}
           ></div>
         </PanelResizeHandle>
-        <Panel defaultSize={50} minSize={30}>
+        <Panel defaultSize={50} minSize={20}>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60} minSize={5}>
               <Container height={'100%'} minWidth={'100%'} margin={0} padding={0}>
                 <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
                   <FaLaptop />
                   <Text fontSize="sm">Preview</Text>
+                  {false && (
+                    <IconButton
+                      size="sm"
+                      onClick={() => null}
+                      colorScheme="blue"
+                      aria-label="Open Preview in New Window"
+                      icon={<FaExternalLinkAlt />}
+                    />
+                  )}
                 </Box>
                 <Preview iFrameSrc={iframeSrc} />
               </Container>
@@ -167,7 +181,7 @@ export const Home = () => {
               <div style={{ backgroundColor: 'white', height: '1px', width: '20px' }} />
             </PanelResizeHandle>
 
-            <Panel defaultSize={40} minSize={30} maxSize={95}>
+            <Panel defaultSize={40} minSize={15} maxSize={95}>
               <Container minWidth={'100%'} margin={0} padding={0}>
                 <Box bg="#064663" w="100%" p={2} color="white" display={'flex'} alignItems={'center'} gap={2}>
                   <FaTerminal />
