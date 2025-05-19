@@ -1,38 +1,20 @@
-export const bindConsoleFeedToIframe = () => {
-  return `
-        <script>
-        ['log', 'error', 'warn', 'info'].forEach((type) => {
-            const original = console[type];
-            console[type] = function (...args) {
-                window.parent.postMessage({
-                source: 'iframe-console',
-                payload: { method: type, data: args },
-                }, '*');
-                original.apply(console, args);
-            };
-            });
-
-            // Catch uncaught runtime errors
-            window.addEventListener('error', (event) => {
-            window.parent.postMessage({
-                source: 'iframe-console',
-                payload: {
-                method: 'error',
-                data: [event.message],
-                },
-            }, '*');
-            });
-
-            // Catch unhandled Promise rejections
-            window.addEventListener('unhandledrejection', (event) => {
-            window.parent.postMessage({
-                source: 'iframe-console',
-                payload: {
-                method: 'error',
-                data: [event.reason],
-                },
-            }, '*');
+const hiddenScript = `
+   (function(){
+        ['log','warn','error','info'].forEach(m=>{
+          const o=console[m];
+          console[m]=function(...a){
+            parent.postMessage({source:'iframe-console',payload:{method:m,data:a}},'*');
+            o.apply(console,a);
+          };
         });
-        </script>
-    `;
-};
+        window.addEventListener('error',e=>{
+          parent.postMessage({source:'iframe-console',payload:{method:'error',data:[e.message]}},'*');
+        });
+        window.addEventListener('unhandledrejection',e=>{
+          parent.postMessage({source:'iframe-console',payload:{method:'error',data:[e.reason]}},'*');
+        });
+        document.currentScript.remove();
+      })();
+`;
+
+export const bindConsoleFeedToIframe = `data:text/javascript;base64,${btoa(hiddenScript)}`;

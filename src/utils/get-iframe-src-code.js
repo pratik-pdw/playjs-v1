@@ -28,7 +28,7 @@ export const getIframeSrcCode = (htmlCode, cssCode, jsCode) => {
             <style>
               ${cssCode}
             </style>
-            ${bindConsoleFeedToIframe()}
+            <script src="${bindConsoleFeedToIframe}"></script>
             <script type="module" defer>
               ${transpiledJavascriptCode}
             </script>
