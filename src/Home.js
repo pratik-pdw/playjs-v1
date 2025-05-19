@@ -1,6 +1,6 @@
 import { Box, Button, Container, Flex, IconButton, Tab, TabIndicator, TabList, TabPanel, TabPanels, Tabs, Text } from '@chakra-ui/react';
 import { CodeEditor } from './Editor';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaBolt, FaSun, FaTerminal, FaLaptop, FaMoon } from 'react-icons/fa6';
 import { Logger } from './Logger';
 import { useLogger } from './useLogger';
@@ -8,8 +8,7 @@ import { THEME_TYPE, useTheme } from './context/ThemeContext';
 import { useSettingsContext } from './context/SettingsContext';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Settings } from './Settings';
-import { MdKeyboardCommandKey } from 'react-icons/md';
-import { IoLogoCss3, IoLogoJavascript, IoLogoHtml5 } from 'react-icons/io';
+import { IoLogoCss3, IoLogoHtml5 } from 'react-icons/io';
 import { IoGolf } from 'react-icons/io5';
 import { DEFAULT_CSS_CODE, DEFAULT_HTML_CODE, DEFAULT_JS_CODE } from './constants';
 import { getIframeSrcCode } from './utils/get-iframe-src-code';
@@ -18,7 +17,6 @@ import { SiJavascript } from 'react-icons/si';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
 export const Home = () => {
-  const previewWindow = useRef(null);
   const [htmlCode, setHtmlCode] = useState(DEFAULT_HTML_CODE);
   const [cssCode, setCssCode] = useState(DEFAULT_CSS_CODE);
   const [jsCode, setJsCode] = useState(DEFAULT_JS_CODE);
@@ -122,7 +120,7 @@ export const Home = () => {
                 <CodeEditor language={'css'} onCmdEnter={handleCmdEnter} value={cssCode} handleEditorChange={handleCssCodeChange} />
               </TabPanel>
               <TabPanel padding={0}>
-                <CodeEditor language={'javascript'} onCmdEnter={handleCmdEnter} value={jsCode} handleEditorChange={handleJavascriptCodeChange} />
+                <CodeEditor language={'typescript'} onCmdEnter={handleCmdEnter} value={jsCode} handleEditorChange={handleJavascriptCodeChange} />
               </TabPanel>
             </TabPanels>
           </Tabs>
